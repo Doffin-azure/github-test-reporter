@@ -222,6 +222,11 @@ For more advanced usage, there are several inputs available.
 
 Only `report-path` is required.
 
+On Windows runners, `report-path` accepts both `/` and `\` as path separators
+in glob patterns. Use a single-quoted YAML value for patterns with backslashes,
+such as `report-path: 'output\Tests\*.ctrf.json'`. On Windows, a backslash is
+always a path separator in this input.
+
 ## Pull Requests
 
 You can add a pull request comment by using the `pull-request-report` input:
