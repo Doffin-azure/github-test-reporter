@@ -4,6 +4,23 @@ GitHub Test Reporter supports various integrations to enhance your test reportin
 
 You can use multiple integrations in the same workflow.
 
+## Data processing
+
+The action reads and processes CTRF and JUnit reports on the GitHub Actions
+runner that executes the step, including self-hosted runners. JUnit conversion
+also runs on the runner.
+
+GitHub receives the output you publish, such as job summaries, pull request and
+issue comments, check runs, annotations in workflow logs, and report artifacts.
+Reports that use historical results can download artifacts from GitHub through
+its API.
+
+External integrations send data to the services you configure. Slack and
+Microsoft Teams receive the rendered notification. AI features send report
+content, such as failed test names and error details, to the configured AI
+provider for processing. This applies to AI configured through `ai` or
+`integrations-config`, including when an AI summary is generated for the report.
+
 Integrations are currently in beta. Please report any issues to the [GitHub Test Reporter repository](https://github.com/ctrf-io/github-test-reporter/issues).
 
 | Integration | Description | Repository |

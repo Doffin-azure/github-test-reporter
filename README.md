@@ -492,6 +492,8 @@ CTRF tooling offers seamless developer tool integration, allowing you to combine
 
 For detailed information about configuring and using these integrations, see our [Integrations Documentation](docs/integrations.md).
 
+See [Data processing](docs/integrations.md#data-processing) for where reports are processed and what is sent to GitHub or to configured integrations.
+
 Integrations are currently in beta. Please report any issues to the [GitHub Test Reporter repository](https://github.com/ctrf-io/github-test-reporter/issues).
 
 ## Generating an AI Report
