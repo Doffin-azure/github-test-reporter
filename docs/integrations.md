@@ -77,8 +77,12 @@ Actions available:
 - `failed`
 - `flaky`
 - `ai`
+- `custom-markdown`
+- `custom-block-kit`
 
-Requires the `SLACK_WEBHOOK_URL` environment variable to be set.
+Set the `SLACK_WEBHOOK_URL` environment variable or provide
+`options.webhookUrl`. For bot authentication, set both `options.oauthToken`
+and `options.channelId`.
 
 ```yaml
 - name: Publish Test Report
@@ -103,6 +107,25 @@ Requires the `SLACK_WEBHOOK_URL` environment variable to be set.
     SLACK_WEBHOOK_URL: ${{ secrets.SLACK_WEBHOOK_URL }}
   if: always()
 ```
+
+For a custom Slack message, set `options.templatePath` to a Handlebars
+template file in the checked-out workspace. The template can access report data
+through `ctrf`, for example `{{ctrf.summary.tests}}`.
+
+```json
+{
+  "slack": {
+    "enabled": true,
+    "action": "custom-markdown",
+    "options": {
+      "templatePath": ".github/templates/slack-report.hbs"
+    }
+  }
+}
+```
+
+Use Slack-flavored Markdown with `custom-markdown`. With `custom-block-kit`,
+the rendered template must be a JSON object with a `blocks` array.
 
 See the [Slack Test Reporter](https://github.com/ctrf-io/slack-test-reporter) for more information.
 

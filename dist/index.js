@@ -63215,7 +63215,7 @@ var require_snapshot_recorder = __commonJS({
   "node_modules/undici/lib/mock/snapshot-recorder.js"(exports2, module) {
     "use strict";
     init_cjs_globals();
-    var { writeFile: writeFile4, readFile: readFile4, mkdir: mkdir3 } = __require("fs/promises");
+    var { writeFile: writeFile4, readFile: readFile5, mkdir: mkdir3 } = __require("fs/promises");
     var { dirname: dirname6, resolve: resolve9 } = __require("path");
     var { setTimeout: setTimeout2, clearTimeout: clearTimeout2 } = __require("timers");
     var { InvalidArgumentError, UndiciError } = require_errors3();
@@ -63433,7 +63433,7 @@ var require_snapshot_recorder = __commonJS({
           throw new InvalidArgumentError("Snapshot path is required");
         }
         try {
-          const data = await readFile4(resolve9(path15), "utf8");
+          const data = await readFile5(resolve9(path15), "utf8");
           const parsed = JSON.parse(data);
           if (Array.isArray(parsed)) {
             this.#snapshots.clear();
@@ -84199,8 +84199,8 @@ var require_graceful_fs = __commonJS({
       fs25.createReadStream = createReadStream3;
       fs25.createWriteStream = createWriteStream2;
       var fs$readFile = fs25.readFile;
-      fs25.readFile = readFile4;
-      function readFile4(path15, options, cb) {
+      fs25.readFile = readFile5;
+      function readFile5(path15, options, cb) {
         if (typeof options === "function")
           cb = options, options = null;
         return go$readFile(path15, options, cb);
@@ -123621,7 +123621,7 @@ var require_jsonfile = __commonJS({
       }
       return obj;
     }
-    var readFile4 = universalify.fromPromise(_readFile);
+    var readFile5 = universalify.fromPromise(_readFile);
     function readFileSync8(file2, options = {}) {
       if (typeof options === "string") {
         options = { encoding: options };
@@ -123653,7 +123653,7 @@ var require_jsonfile = __commonJS({
       return fs24.writeFileSync(file2, str, options);
     }
     module.exports = {
-      readFile: readFile4,
+      readFile: readFile5,
       readFileSync: readFileSync8,
       writeFile: writeFile4,
       writeFileSync: writeFileSync2
@@ -166613,7 +166613,7 @@ var init_getSSOTokenFilepath = __esm({
 });
 
 // node_modules/@smithy/core/dist-es/submodules/config/shared-ini-file-loader/getSSOTokenFromFile.js
-import { readFile as readFile2 } from "fs/promises";
+import { readFile as readFile3 } from "fs/promises";
 var tokenIntercept, getSSOTokenFromFile;
 var init_getSSOTokenFromFile = __esm({
   "node_modules/@smithy/core/dist-es/submodules/config/shared-ini-file-loader/getSSOTokenFromFile.js"() {
@@ -166626,7 +166626,7 @@ var init_getSSOTokenFromFile = __esm({
         return tokenIntercept[id];
       }
       const ssoTokenFilepath = getSSOTokenFilepath(id);
-      const ssoTokenText = await readFile2(ssoTokenFilepath, "utf8");
+      const ssoTokenText = await readFile3(ssoTokenFilepath, "utf8");
       return JSON.parse(ssoTokenText);
     };
   }
@@ -166753,14 +166753,14 @@ var init_parseIni = __esm({
 
 // node_modules/@smithy/core/dist-es/submodules/config/shared-ini-file-loader/readFile.js
 import { readFile as fsReadFile } from "fs/promises";
-var filePromises, fileIntercept, readFile3;
+var filePromises, fileIntercept, readFile4;
 var init_readFile = __esm({
   "node_modules/@smithy/core/dist-es/submodules/config/shared-ini-file-loader/readFile.js"() {
     "use strict";
     init_cjs_globals();
     filePromises = {};
     fileIntercept = {};
-    readFile3 = (path15, options) => {
+    readFile4 = (path15, options) => {
       if (fileIntercept[path15] !== void 0) {
         return fileIntercept[path15];
       }
@@ -166800,10 +166800,10 @@ var init_loadSharedConfigFiles = __esm({
         resolvedConfigFilepath = join9(homeDir, configFilepath.slice(2));
       }
       const parsedFiles = await Promise.all([
-        readFile3(resolvedConfigFilepath, {
+        readFile4(resolvedConfigFilepath, {
           ignoreCache: init.ignoreCache
         }).then(parseIni).then(getConfigData).catch(swallowError),
-        readFile3(resolvedFilepath, {
+        readFile4(resolvedFilepath, {
           ignoreCache: init.ignoreCache
         }).then(parseIni).catch(swallowError)
       ]);
@@ -166838,7 +166838,7 @@ var init_loadSsoSessionData = __esm({
     init_parseIni();
     init_readFile();
     swallowError2 = () => ({});
-    loadSsoSessionData = async (init = {}) => readFile3(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2);
+    loadSsoSessionData = async (init = {}) => readFile4(init.configFilepath ?? getConfigFilepath()).then(parseIni).then(getSsoSessionData).catch(swallowError2);
   }
 });
 
@@ -247959,6 +247959,7 @@ init_cjs_globals();
 
 // src/integrations/slack.ts
 init_cjs_globals();
+import { readFile } from "fs/promises";
 
 // node_modules/slack-ctrf/dist/index.js
 init_cjs_globals();
@@ -248513,6 +248514,52 @@ var formatFailedTestSummary = (test, environment, options) => {
   });
   return createSlackMessage(blocks2, COLORS.FAILED, title, environment, name);
 };
+var formatCustomMarkdownMessage = (report, templateContent, environment, options) => {
+  const { title, prefix: prefix3, suffix } = normalizeOptions("", options);
+  const { missingEnvProperties } = handleBuildInfo(environment);
+  const customBlocks = [
+    {
+      type: "section",
+      text: {
+        type: "mrkdwn",
+        text: templateContent
+      }
+    }
+  ];
+  const blocks2 = createMessageBlocks({
+    title,
+    prefix: prefix3,
+    suffix,
+    customBlocks,
+    missingEnvProperties
+  });
+  return createSlackMessage(
+    blocks2,
+    report.results.summary.failed > 0 ? COLORS.FAILED : COLORS.PASSED,
+    title,
+    environment
+  );
+};
+var formatCustomBlockKitMessage = (report, blockKit) => {
+  if (!(process.env.CTRF_SKIP_FOOTER === "true")) {
+    blockKit.blocks.push({
+      type: BLOCK_TYPES.CONTEXT,
+      elements: [
+        {
+          type: TEXT_TYPES.MRKDWN,
+          text: MESSAGES.FOOTER_TEXT
+        }
+      ]
+    });
+  }
+  return createSlackMessage(
+    blockKit.blocks,
+    report.results.summary.failed > 0 ? COLORS.FAILED : COLORS.PASSED,
+    "",
+    report.results.environment,
+    "Test Results"
+  );
+};
 function createSlackMessage(blocks2, color, title, environment, additionalInfo) {
   const notification = [];
   notification.push(title);
@@ -248644,6 +248691,227 @@ function stripAnsiFromErrors2(report) {
     }
   });
   return report;
+}
+function uppercaseHelper3() {
+  import_handlebars9.default.registerHelper("uppercase", (str) => {
+    return str.toUpperCase();
+  });
+}
+function escapeMarkdownHelper3() {
+  import_handlebars9.default.registerHelper("escapeMarkdown", (str) => {
+    return str.replace(/([\\*_{}[\]()#+\-.!])/g, "\\$1");
+  });
+}
+function splitLinesHelper3() {
+  import_handlebars9.default.registerHelper("splitLines", (str) => {
+    return str.split("\n").filter((line) => line.trim() !== "");
+  });
+}
+function sliceStringHelper3() {
+  import_handlebars9.default.registerHelper(
+    "sliceString",
+    (str, start, end) => {
+      return str.slice(start, end);
+    }
+  );
+}
+function convertTimestamp2() {
+  import_handlebars9.default.registerHelper("convertTimestamp", (timestamp) => {
+    if (timestamp === "") return "";
+    const date2 = new Date(timestamp);
+    const options = {
+      year: "2-digit",
+      month: "short",
+      day: "numeric",
+      hour: "numeric",
+      minute: "numeric",
+      hour12: false
+    };
+    return date2.toLocaleString("en-US", options);
+  });
+}
+function LimitFailedTests2() {
+  import_handlebars10.default.registerHelper(
+    "limitFailedTests",
+    (tests, limit3) => {
+      return tests.filter((test) => test.status === "failed").slice(0, limit3);
+    }
+  );
+}
+function moreThanHelper2() {
+  import_handlebars10.default.registerHelper("moreThan", (a6, b6) => a6 > b6);
+}
+function countFlakyHelper2() {
+  import_handlebars10.default.registerHelper("countFlaky", (tests) => {
+    return tests.filter((test) => test.flaky).length;
+  });
+}
+function anyFlakyTestsHelper3() {
+  import_handlebars10.default.registerHelper("anyFlakyTests", (tests) => {
+    return tests.some((test) => test.flaky);
+  });
+}
+function anyFailedTestsHelper2() {
+  import_handlebars10.default.registerHelper("anyFailedTests", (tests) => {
+    return tests.some((test) => test.status === "failed");
+  });
+}
+function anySkippedTestsHelper2() {
+  import_handlebars10.default.registerHelper("anySkippedTests", (tests) => {
+    return tests.some(
+      (test) => test.status === "skipped" || test.status === "pending" || test.status === "other"
+    );
+  });
+}
+function formatDurationStartStopToHumanHelper2() {
+  import_handlebars10.default.registerHelper("formatDuration", (start, stop) => {
+    if (start === 0 && stop === 0) {
+      return "not captured";
+    }
+    if (Number.isNaN(Number(start)) || Number.isNaN(Number(stop))) {
+      return "not captured";
+    }
+    const durationMs = stop - start;
+    if (durationMs < 1) {
+      return `1ms`;
+    } else if (durationMs < 1e3) {
+      return `${Math.floor(durationMs)}ms`;
+    } else if (durationMs < 6e4) {
+      return `${(durationMs / 1e3).toFixed(1)}s`;
+    } else {
+      const minutes = Math.floor(durationMs / 6e4);
+      const seconds = Math.floor(durationMs % 6e4 / 1e3);
+      return `${minutes}m${seconds}s`;
+    }
+  });
+}
+function formatDurationMsToHumanHelper2() {
+  import_handlebars10.default.registerHelper("formatDurationMs", (duration3) => {
+    if (Number.isNaN(Number(duration3))) {
+      return "not captured";
+    }
+    if (duration3 < 1) {
+      return `1ms`;
+    } else if (duration3 < 1e3) {
+      return `${Math.floor(duration3)}ms`;
+    } else if (duration3 < 6e4) {
+      return `${(duration3 / 1e3).toFixed(1)}s`;
+    } else {
+      const minutes = Math.floor(duration3 / 6e4);
+      const seconds = Math.floor(duration3 % 6e4 / 1e3);
+      return `${minutes}m${seconds}s`;
+    }
+  });
+}
+function equalsHelper2() {
+  import_handlebars10.default.registerHelper("eq", (arg1, arg2) => {
+    return arg1 === arg2;
+  });
+}
+function sortTestsByFlakyRateHelper3() {
+  import_handlebars10.default.registerHelper("sortTestsByFlakyRate", (tests) => {
+    const testsCopy = tests.slice();
+    const flakyTests = testsCopy.filter(
+      (test) => test.extra !== void 0 && typeof test.extra.flakyRate === "number" && test.extra.flakyRate > 0
+    );
+    flakyTests.sort(
+      (a6, b6) => Number(b6.extra?.flakyRate) - Number(a6.extra?.flakyRate)
+    );
+    return flakyTests;
+  });
+}
+function sortTestsByFailRateHelper3() {
+  import_handlebars10.default.registerHelper("sortTestsByFailRate", (tests) => {
+    const testsCopy = tests.slice();
+    const failedTests = testsCopy.filter(
+      (test) => test.extra !== void 0 && typeof test.extra.failRate === "number" && test.extra.failRate > 0
+    );
+    failedTests.sort(
+      (a6, b6) => Number(b6.extra?.failRate) - Number(a6.extra?.failRate)
+    );
+    return failedTests;
+  });
+}
+function formatRateHelper2() {
+  import_handlebars10.default.registerHelper(
+    "formatRate",
+    (rate, fractionDigits) => {
+      return rate.toFixed(fractionDigits);
+    }
+  );
+}
+function stripAnsiHelper3() {
+  import_handlebars11.default.registerHelper("stripAnsi", (message) => {
+    return stripAnsi3(message);
+  });
+}
+function formatMessageHelper2() {
+  import_handlebars11.default.registerHelper("formatMessage", (text) => {
+    return stripAnsi3(text ?? "No message available");
+  });
+}
+function sliceArrayHelper2() {
+  import_handlebars12.default.registerHelper(
+    "slice",
+    (array, start, end, options) => {
+      const slicedArray = array.slice(start, end);
+      return slicedArray.map((item) => options.fn(item)).join("");
+    }
+  );
+}
+function reverseArray2() {
+  import_handlebars12.default.registerHelper("reverseArray", (arr) => {
+    if (arr !== void 0) {
+      return arr.reverse();
+    }
+    return [];
+  });
+}
+function addHelper3() {
+  import_handlebars13.default.registerHelper("add", (...args) => {
+    args.pop();
+    return args.reduce(
+      (sum, value) => sum + (value ?? 0),
+      0
+    );
+  });
+}
+function subtractHelper2() {
+  import_handlebars13.default.registerHelper("subtract", (a6, b6) => a6 - b6);
+}
+function registerAllHelpers2() {
+  formatDurationStartStopToHumanHelper2();
+  countFlakyHelper2();
+  stripAnsiHelper3();
+  uppercaseHelper3();
+  equalsHelper2();
+  formatDurationMsToHumanHelper2();
+  formatMessageHelper2();
+  LimitFailedTests2();
+  moreThanHelper2();
+  sortTestsByFlakyRateHelper3();
+  formatRateHelper2();
+  sortTestsByFailRateHelper3();
+  sliceArrayHelper2();
+  reverseArray2();
+  escapeMarkdownHelper3();
+  splitLinesHelper3();
+  sliceStringHelper3();
+  convertTimestamp2();
+  addHelper3();
+  subtractHelper2();
+  anyFlakyTestsHelper3();
+  anyFailedTestsHelper2();
+  anySkippedTestsHelper2();
+}
+function compileTemplate2(templateSource, data) {
+  registerAllHelpers2();
+  loadHelpers(import_handlebars8.default);
+  const context5 = { ctrf: data.results };
+  const template = import_handlebars8.default.compile(templateSource, {
+    preventIndent: true
+  });
+  return template(context5);
 }
 async function sendTestResultsToSlack(report, options = {}, logs = false) {
   if (options.onFailOnly !== void 0 && options.onFailOnly && report.results.summary.failed === 0) {
@@ -248781,6 +249049,63 @@ async function sendAISummaryToSlack(report, options = {}, logs = false) {
     }
   }
 }
+async function sendCustomMarkdownTemplateToSlack(report, templateContent, options = {}, logs = false) {
+  if (options.onFailOnly !== void 0 && options.onFailOnly && report.results.summary.failed === 0) {
+    if (logs) console.log("No failed tests. Message not sent.");
+    return;
+  }
+  report = stripAnsiFromErrors2(report);
+  const compiledContent = compileTemplate2(templateContent, report);
+  const message = formatCustomMarkdownMessage(
+    report,
+    compiledContent,
+    report.results.environment,
+    options
+  );
+  if (message !== null) {
+    if (options.webhookUrl !== void 0) {
+      await sendSlackMessage(message, {
+        webhookUrl: options.webhookUrl
+      });
+    } else if (options.oauthToken !== void 0 && options.channelId !== void 0) {
+      await postMessage(options.channelId, message, {
+        oauthToken: options.oauthToken
+      });
+    }
+    if (logs) console.log("Custom template message sent to Slack.");
+  } else {
+    if (logs) console.log("No custom message detected. No message sent.");
+  }
+}
+async function sendCustomBlockKitTemplateToSlack(report, templateContent, options = {}, logs = false) {
+  if (options.onFailOnly !== void 0 && options.onFailOnly && report.results.summary.failed === 0) {
+    if (logs) console.log("No failed tests. Message not sent.");
+    return;
+  }
+  report = stripAnsiFromErrors2(report);
+  const compiledContent = compileTemplate2(templateContent, report);
+  const blockKit = JSON.parse(compiledContent);
+  if (blockKit.blocks.length === 0) {
+    if (logs) console.log("No blocks detected. No message sent.");
+    return;
+  }
+  const message = formatCustomBlockKitMessage(report, blockKit);
+  if (message !== null) {
+    if (options.webhookUrl !== void 0) {
+      await sendSlackMessage(message, {
+        webhookUrl: options.webhookUrl
+      });
+    } else if (options.oauthToken !== void 0 && options.channelId !== void 0) {
+      await postMessage(options.channelId, message, {
+        oauthToken: options.oauthToken
+      });
+    }
+    if (logs) console.log("Custom Block Kit message sent to Slack.");
+  } else {
+    if (logs)
+      console.log("No custom Block Kit message detected. No message sent.");
+  }
+}
 
 // src/integrations/slack.ts
 async function handleSlackIntegration(config, report) {
@@ -248817,9 +249142,22 @@ async function handleSlackIntegration(config, report) {
       info("Processed Slack AI summary notification");
       break;
     }
+    case "custom-markdown":
+    case "custom-block-kit": {
+      if (!options.templatePath?.trim()) {
+        endGroup();
+        throw new Error(
+          `Slack action "${config.action}" requires options.templatePath.`
+        );
+      }
+      const template = await readFile(options.templatePath, "utf8");
+      const send = config.action === "custom-markdown" ? sendCustomMarkdownTemplateToSlack : sendCustomBlockKitTemplateToSlack;
+      await send(report, template, options);
+      break;
+    }
     default:
       warning(
-        `Unknown action type, valid actions are: results, failed, flaky, ai`
+        `Unknown action type, valid actions are: results, failed, flaky, ai, custom-markdown, custom-block-kit`
       );
       warning(
         `Please check your integrations-config input for any typos or missing integrations.`
