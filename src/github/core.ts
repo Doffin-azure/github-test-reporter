@@ -380,6 +380,19 @@ function generateReportByType(
 				report,
 			);
 			break;
+		case "slowest-current-run-report": {
+			core.info("Adding slowest tests for the current run to summary");
+			const slowestTests = report.results.tests
+				.filter((test) => Number.isFinite(test.duration) && test.duration >= 0)
+				.sort((first, second) => second.duration - first.duration)
+				.slice(0, 10);
+			addViewToSummary(
+				"### Slowest Tests in This Run",
+				BuiltInReports.SlowestCurrentRunTable,
+				{ ...report, results: { ...report.results, tests: slowestTests } },
+			);
+			break;
+		}
 		case "timeline-report":
 			core.info("Adding timeline report to summary");
 			addViewToSummary("### Timeline", BuiltInReports.Timeline, report);

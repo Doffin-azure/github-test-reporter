@@ -51,6 +51,7 @@ function inputs(overrides: Partial<Inputs> = {}): Inputs {
 		customReport: false,
 		insightsReport: false,
 		slowestReport: false,
+		slowestCurrentRunReport: false,
 		communityReport: false,
 		communityReportName: "",
 		fileReport: false,

@@ -237928,6 +237928,7 @@ function isInputKey(key) {
     "communityReport",
     "insightsReport",
     "slowestReport",
+    "slowestCurrentRunReport",
     "fileReport",
     "timelineReport"
   ];
@@ -237959,7 +237960,7 @@ function isAnyReportEnabled(inputs) {
   return inputs.summaryReport || inputs.summaryDeltaReport || inputs.githubReport || inputs.failedReport || inputs.flakyReport || inputs.flakyRateReport || inputs.failedFoldedReport || inputs.failRateReport || inputs.previousResultsReport || inputs.aiReport || inputs.aiSummaryReport || inputs.skippedReport || inputs.testReport || inputs.testListReport || inputs.suiteFoldedReport || inputs.suiteListReport || inputs.pullRequestReport || inputs.commitReport || inputs.customReport || inputs.communityReport || inputs.insightsReport || inputs.slowestReport || inputs.fileReport || inputs.timelineReport || inputs.testsChangedReport;
 }
 function numberOfReportsEnabled(inputs) {
-  return (inputs.summaryReport ? 1 : 0) + (inputs.summaryDeltaReport ? 1 : 0) + (inputs.githubReport ? 1 : 0) + (inputs.failedReport ? 1 : 0) + (inputs.flakyReport ? 1 : 0) + (inputs.flakyRateReport ? 1 : 0) + (inputs.failedFoldedReport ? 1 : 0) + (inputs.failRateReport ? 1 : 0) + (inputs.previousResultsReport ? 1 : 0) + (inputs.aiReport ? 1 : 0) + (inputs.aiSummaryReport ? 1 : 0) + (inputs.skippedReport ? 1 : 0) + (inputs.testReport ? 1 : 0) + (inputs.testListReport ? 1 : 0) + (inputs.suiteFoldedReport ? 1 : 0) + (inputs.suiteListReport ? 1 : 0) + (inputs.pullRequestReport ? 1 : 0) + (inputs.commitReport ? 1 : 0) + (inputs.customReport ? 1 : 0) + (inputs.communityReport ? 1 : 0) + (inputs.insightsReport ? 1 : 0) + (inputs.slowestReport ? 1 : 0) + (inputs.fileReport ? 1 : 0) + (inputs.timelineReport ? 1 : 0) + (inputs.testsChangedReport ? 1 : 0);
+  return (inputs.summaryReport ? 1 : 0) + (inputs.summaryDeltaReport ? 1 : 0) + (inputs.githubReport ? 1 : 0) + (inputs.failedReport ? 1 : 0) + (inputs.flakyReport ? 1 : 0) + (inputs.flakyRateReport ? 1 : 0) + (inputs.failedFoldedReport ? 1 : 0) + (inputs.failRateReport ? 1 : 0) + (inputs.previousResultsReport ? 1 : 0) + (inputs.aiReport ? 1 : 0) + (inputs.aiSummaryReport ? 1 : 0) + (inputs.skippedReport ? 1 : 0) + (inputs.testReport ? 1 : 0) + (inputs.testListReport ? 1 : 0) + (inputs.suiteFoldedReport ? 1 : 0) + (inputs.suiteListReport ? 1 : 0) + (inputs.pullRequestReport ? 1 : 0) + (inputs.commitReport ? 1 : 0) + (inputs.customReport ? 1 : 0) + (inputs.communityReport ? 1 : 0) + (inputs.insightsReport ? 1 : 0) + (inputs.slowestReport ? 1 : 0) + (inputs.slowestCurrentRunReport ? 1 : 0) + (inputs.fileReport ? 1 : 0) + (inputs.timelineReport ? 1 : 0) + (inputs.testsChangedReport ? 1 : 0);
 }
 
 // node_modules/junit-to-ctrf/dist/index.js
@@ -247163,6 +247164,7 @@ var BuiltInReports = {
   CommitTable: join2(basePath, "commit-table.hbs"),
   InsightsTable: join2(basePath, "insights-table.hbs"),
   SlowestTable: join2(basePath, "slowest-table.hbs"),
+  SlowestCurrentRunTable: join2(basePath, "slowest-current-run-table.hbs"),
   GitHub: join2(basePath, "github.hbs"),
   FileTable: join2(basePath, "file-table.hbs"),
   Timeline: join2(basePath, "timeline.hbs")
@@ -247196,6 +247198,7 @@ var DEFAULT_REPORT_ORDER = [
   "commit-report",
   "slowest-report",
   "timeline-report",
+  "slowest-current-run-report",
   "custom-report",
   "community-report",
   "test-report",
@@ -247490,6 +247493,16 @@ function generateReportByType(reportType, inputs, report) {
         report
       );
       break;
+    case "slowest-current-run-report": {
+      info("Adding slowest tests for the current run to summary");
+      const slowestTests = report.results.tests.filter((test) => Number.isFinite(test.duration) && test.duration >= 0).sort((first, second) => second.duration - first.duration).slice(0, 10);
+      addViewToSummary(
+        "### Slowest Tests in This Run",
+        BuiltInReports.SlowestCurrentRunTable,
+        { ...report, results: { ...report.results, tests: slowestTests } }
+      );
+      break;
+    }
     case "timeline-report":
       info("Adding timeline report to summary");
       addViewToSummary("### Timeline", BuiltInReports.Timeline, report);
@@ -247633,6 +247646,9 @@ function getInputs() {
     commitReport: getBooleanInputAllowEmpty("commit-report"),
     insightsReport: getBooleanInputAllowEmpty("insights-report"),
     slowestReport: getBooleanInputAllowEmpty("slowest-report"),
+    slowestCurrentRunReport: getBooleanInputAllowEmpty(
+      "slowest-current-run-report"
+    ),
     customReport: getBooleanInputAllowEmpty("custom-report"),
     communityReport: getBooleanInputAllowEmpty("community-report"),
     communityReportName: getInput("community-report-name"),

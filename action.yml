@@ -104,6 +104,10 @@ inputs:
     description: "Include a report showing the top 10 slowest tests by average duration."
     required: false
     default: false
+  slowest-current-run-report:
+    description: "Include the 10 slowest tests by their duration in the current run."
+    required: false
+    default: false
   timeline-report:
     description: >
       Include a timeline (Mermaid Gantt chart) of when each test ran on each

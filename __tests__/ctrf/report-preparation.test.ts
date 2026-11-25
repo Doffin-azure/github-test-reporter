@@ -511,6 +511,7 @@ function createSingleReportInputs(): Inputs {
 		customReport: false,
 		insightsReport: false,
 		slowestReport: false,
+		slowestCurrentRunReport: false,
 		fileReport: false,
 		timelineReport: false,
 		communityReport: false,

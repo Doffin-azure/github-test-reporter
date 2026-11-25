@@ -30,6 +30,7 @@ export interface Inputs {
 	customReport: boolean;
 	insightsReport: boolean;
 	slowestReport: boolean;
+	slowestCurrentRunReport: boolean;
 	communityReport: boolean;
 	communityReportName: string;
 	fileReport: boolean;
