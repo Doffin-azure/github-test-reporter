@@ -1,10 +1,7 @@
 import type { CTRFReport } from "ctrf";
 import type { SlackConfig } from "src/types/integrations.js";
 import * as core from "@actions/core";
-import { readFile } from "node:fs/promises";
 import {
-	sendCustomBlockKitTemplateToSlack,
-	sendCustomMarkdownTemplateToSlack,
 	sendTestResultsToSlack,
 	sendAISummaryToSlack,
 	sendFailedResultsToSlack,
@@ -49,25 +46,9 @@ export async function handleSlackIntegration(
 			core.info("Processed Slack AI summary notification");
 			break;
 		}
-		case "custom-markdown":
-		case "custom-block-kit": {
-			if (!options.templatePath?.trim()) {
-				core.endGroup();
-				throw new Error(
-					`Slack action "${config.action}" requires options.templatePath.`,
-				);
-			}
-			const template = await readFile(options.templatePath, "utf8");
-			const send =
-				config.action === "custom-markdown"
-					? sendCustomMarkdownTemplateToSlack
-					: sendCustomBlockKitTemplateToSlack;
-			await send(report, template, options);
-			break;
-		}
 		default:
 			core.warning(
-				`Unknown action type, valid actions are: results, failed, flaky, ai, custom-markdown, custom-block-kit`,
+				`Unknown action type, valid actions are: results, failed, flaky, ai`,
 			);
 			core.warning(
 				`Please check your integrations-config input for any typos or missing integrations.`,

@@ -21,7 +21,6 @@ execution.
   - [Insights Report](#insights-report)
   - [Tests Changed Report](#tests-changed-report)
   - [Slowest Report](#slowest-report)
-  - [Slowest Tests in This Run](#slowest-tests-in-this-run)
   - [Timeline Report](#timeline-report)
   - [Skipped Report](#skipped-report)
   - [Suite Folded Report](#suite-folded-report)
@@ -845,21 +844,6 @@ Set the `slowest-report` input to true in your workflow configuration:
 | handler.test.ts &gt; createStatusCheck - createStatusCheck should truncate summary if it exceeds 65000 characters | 1 | 0 | 0% | 1ms |
 
 <sub><i>Measured over 2 runs.</i></sub>
-
-## Slowest Tests in This Run
-
-Set `slowest-current-run-report` to show up to ten tests, ordered by their CTRF
-`duration` in the current run. The report does not fetch historical results.
-Use `slowest-report` to rank tests by historical P95 duration.
-
-```yaml
-- name: Publish Test Report
-  uses: ctrf-io/github-test-reporter@v1
-  with:
-    report-path: './ctrf/*.json'
-    slowest-current-run-report: true
-  if: always()
-```
 
 ## Timeline Report
 

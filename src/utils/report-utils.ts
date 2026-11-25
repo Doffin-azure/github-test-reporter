@@ -64,7 +64,6 @@ function isInputKey(key: string): key is keyof Inputs {
 		"communityReport",
 		"insightsReport",
 		"slowestReport",
-		"slowestCurrentRunReport",
 		"fileReport",
 		"timelineReport",
 	];
@@ -137,7 +136,6 @@ export function isAnyPreviousResultsReportEnabled(inputs: Inputs): boolean {
 		inputs.failRateReport ||
 		inputs.flakyRateReport ||
 		inputs.slowestReport ||
-		inputs.slowestCurrentRunReport ||
 		inputs.summaryDeltaReport ||
 		inputs.testsChangedReport
 	);
@@ -213,7 +211,6 @@ export function numberOfReportsEnabled(inputs: Inputs): number {
 		(inputs.communityReport ? 1 : 0) +
 		(inputs.insightsReport ? 1 : 0) +
 		(inputs.slowestReport ? 1 : 0) +
-		(inputs.slowestCurrentRunReport ? 1 : 0) +
 		(inputs.fileReport ? 1 : 0) +
 		(inputs.timelineReport ? 1 : 0) +
 		(inputs.testsChangedReport ? 1 : 0)

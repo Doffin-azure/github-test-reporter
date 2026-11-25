@@ -152,7 +152,6 @@ For more advanced usage, there are several inputs available.
     # Core Configuration
     report-path: "./ctrf/*.json" # Path or glob pattern to the CTRF report JSON file.
     template-path: "./templates/custom-summary.hbs" # Path to the Handlebars template for customizing markdown output.
-    report-suffix: "" # Markdown to append after the report content.
 
     # Reports - Choose as many as you like. Default is false. Choosing none will use default reports.
     summary-report: true
@@ -169,7 +168,6 @@ For more advanced usage, there are several inputs available.
     previous-results-report: false
     insights-report: false
     slowest-report: false
-    slowest-current-run-report: false
     timeline-report: false
     ai-report: false
     ai-summary-report: false
@@ -295,20 +293,6 @@ that repository:
   env:
     GITHUB_TOKEN: ${{ secrets.CROSS_REPO_TOKEN }}
   if: always()
-```
-
-### Link to an external report
-
-Use `report-suffix` to append Markdown to the job summary, PR or issue
-comment, and `summary` step output. For example, add a link produced by an
-earlier step:
-
-```yaml
-with:
-  report-path: "./ctrf/*.json"
-  summary-report: true
-  report-suffix: |
-    [View the Playwright HTML report](${{ steps.playwright-report.outputs.url }})
 ```
 
 ### Comment Management Inputs
@@ -507,8 +491,6 @@ CTRF tooling offers seamless developer tool integration, allowing you to combine
 | AI Test Reporter              | Intelligent test analysis using leading AI models     | [ctrf-io/ai-test-reporter](https://github.com/ctrf-io/ai-test-reporter)       |
 
 For detailed information about configuring and using these integrations, see our [Integrations Documentation](docs/integrations.md).
-
-See [Data processing](docs/integrations.md#data-processing) for where reports are processed and what is sent to GitHub or to configured integrations.
 
 Integrations are currently in beta. Please report any issues to the [GitHub Test Reporter repository](https://github.com/ctrf-io/github-test-reporter/issues).
 

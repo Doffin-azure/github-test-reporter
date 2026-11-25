@@ -59,9 +59,6 @@ export function getInputs(): Inputs {
 		commitReport: getBooleanInputAllowEmpty("commit-report"),
 		insightsReport: getBooleanInputAllowEmpty("insights-report"),
 		slowestReport: getBooleanInputAllowEmpty("slowest-report"),
-		slowestCurrentRunReport: getBooleanInputAllowEmpty(
-			"slowest-current-run-report",
-		),
 		customReport: getBooleanInputAllowEmpty("custom-report"),
 		communityReport: getBooleanInputAllowEmpty("community-report"),
 		communityReportName: core.getInput("community-report-name"),
@@ -70,7 +67,6 @@ export function getInputs(): Inputs {
 		artifactName: core.getInput("artifact-name") || "ctrf-report",
 		annotate: getBooleanInputAllowEmpty("annotate"),
 		title: core.getInput("title") || "",
-		reportSuffix: core.getInput("report-suffix", { trimWhitespace: false }),
 		onFailOnly: getBooleanInputAllowEmpty("on-fail-only"),
 		exitOnNoFiles: getBooleanInputAllowEmpty("exit-on-no-files"),
 		exitOnFail: getBooleanInputAllowEmpty("exit-on-fail"),

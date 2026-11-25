@@ -17,9 +17,6 @@ inputs:
   title:
     description: "Title to display in the GitHub Actions summary or pull request comment."
     required: false
-  report-suffix:
-    description: "Markdown to append after the report content."
-    required: false
 
   # Report Options
   summary-report:
@@ -102,10 +99,6 @@ inputs:
     default: false
   slowest-report:
     description: "Include a report showing the top 10 slowest tests by average duration."
-    required: false
-    default: false
-  slowest-current-run-report:
-    description: "Include the 10 slowest tests by their duration in the current run."
     required: false
     default: false
   timeline-report:

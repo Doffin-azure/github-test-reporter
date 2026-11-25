@@ -30,7 +30,6 @@ export interface Inputs {
 	customReport: boolean;
 	insightsReport: boolean;
 	slowestReport: boolean;
-	slowestCurrentRunReport: boolean;
 	communityReport: boolean;
 	communityReportName: string;
 	fileReport: boolean;
@@ -38,7 +37,6 @@ export interface Inputs {
 	artifactName: string;
 	annotate: boolean;
 	title: string;
-	reportSuffix?: string;
 	onFailOnly: boolean;
 	exitOnNoFiles: boolean;
 	exitOnEmpty: boolean;

@@ -64,7 +64,7 @@ export function generateViews(inputs: Inputs, report: CTRFReport): void {
 		addViewToSummary("### Tests", BuiltInReports.TestTable, report);
 
 		addReportFooters(report, inputs, false);
-		addFooter(inputs.reportSuffix);
+		addFooter();
 		return;
 	}
 
@@ -130,16 +130,13 @@ export function generateViews(inputs: Inputs, report: CTRFReport): void {
 		}
 	}
 	addReportFooters(report, inputs, hasPreviousResultsReports);
-	addFooter(inputs.reportSuffix);
+	addFooter();
 }
 
 /**
  * Helper function to add the footer to the summary
  */
-function addFooter(reportSuffix?: string): void {
-	if (reportSuffix?.trim()) {
-		core.summary.addRaw(reportSuffix).addEOL().addEOL();
-	}
+function addFooter(): void {
 	core.summary.addRaw(
 		"[Github Test Reporter](https://github.com/ctrf-io/github-test-reporter) by [CTRF](https://ctrf.io) 💚",
 	);
@@ -380,19 +377,6 @@ function generateReportByType(
 				report,
 			);
 			break;
-		case "slowest-current-run-report": {
-			core.info("Adding slowest tests for the current run to summary");
-			const slowestTests = report.results.tests
-				.filter((test) => Number.isFinite(test.duration) && test.duration >= 0)
-				.sort((first, second) => second.duration - first.duration)
-				.slice(0, 10);
-			addViewToSummary(
-				"### Slowest Tests in This Run",
-				BuiltInReports.SlowestCurrentRunTable,
-				{ ...report, results: { ...report.results, tests: slowestTests } },
-			);
-			break;
-		}
 		case "timeline-report":
 			core.info("Adding timeline report to summary");
 			addViewToSummary("### Timeline", BuiltInReports.Timeline, report);

@@ -21,7 +21,6 @@ export const DEFAULT_REPORT_ORDER: string[] = [
 	"commit-report",
 	"slowest-report",
 	"timeline-report",
-	"slowest-current-run-report",
 	"custom-report",
 	"community-report",
 	"test-report",

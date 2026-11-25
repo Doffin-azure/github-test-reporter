@@ -10,13 +10,7 @@ interface IntegrationConfig {
 }
 
 export interface SlackConfig extends IntegrationConfig {
-	action:
-		| "results"
-		| "ai"
-		| "failed"
-		| "flaky"
-		| "custom-markdown"
-		| "custom-block-kit";
+	action: "results" | "ai" | "failed" | "flaky";
 	token?: string;
 	options?: SlackOptions;
 }
@@ -30,7 +24,6 @@ export interface SlackOptions {
 	title?: string;
 	prefix?: string;
 	suffix?: string;
-	templatePath?: string;
 	consolidated?: boolean;
 	onFailOnly?: boolean;
 }
