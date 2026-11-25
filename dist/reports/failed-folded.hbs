@@ -12,8 +12,19 @@
         <td>
           <details>
             <summary>{{getCtrfEmoji "failed"}} {{name}}</summary>
-            <pre><code>{{#if message}}{{formatTestMessagePreCode message true}}{{else}}No message available{{/if}}</code></pre>
-            <p><strong>Trace:</strong></p>
+            {{#if message}}
+              {{#with (formatAssertionDiff message)}}
+
+{{{this}}}
+
+              {{else}}
+            <pre><code>{{formatTestMessagePreCode message true}}</code></pre>
+              {{/with}}
+            {{else}}
+            <pre><code>No message available</code></pre>
+            {{/if}}
+{{! Start the HTML block at column one so GitHub resumes HTML after the diff. }}
+<p><strong>Trace:</strong></p>
             <pre><code>{{#if trace}}{{formatTestMessagePreCode trace true}}{{else}}No trace available{{/if}}</code></pre>
           </details>
         </td>

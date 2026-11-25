@@ -241269,6 +241269,22 @@ function formatMessagePreCodeHelper() {
     return convert.toHtml(message).replace(/\n{2,}/g, "\n");
   });
 }
+function formatAssertionDiffHelper() {
+  import_handlebars3.default.registerHelper("formatAssertionDiff", (text) => {
+    const message = stripAnsi(text).replace(/\r\n?/g, "\n");
+    if (!/^\+[ \t]/m.test(message) || !/^-[ \t]/m.test(message)) {
+      return void 0;
+    }
+    let fenceLength = 3;
+    for (const backticks of message.matchAll(/`{3,}/g)) {
+      fenceLength = Math.max(fenceLength, backticks[0].length + 1);
+    }
+    const fence = "`".repeat(fenceLength);
+    return `${fence}diff
+${message}
+${fence}`;
+  });
+}
 
 // src/handlebars/helpers/array.ts
 init_cjs_globals();
@@ -241316,6 +241332,7 @@ function registerAllHelpers() {
   formatDurationMsToHumanHelper();
   formatMessageHelper();
   formatMessagePreCodeHelper();
+  formatAssertionDiffHelper();
   LimitFailedTests();
   moreThanHelper();
   sortTestsByFlakyRateHelper();
