@@ -247222,7 +247222,7 @@ function generateViews(inputs, report) {
     }
     addViewToSummary("### Tests", BuiltInReports.TestTable, report);
     addReportFooters(report, inputs, false);
-    addFooter();
+    addFooter(inputs.reportSuffix);
     return;
   }
   const reportOrder = inputs.reportOrder && inputs.reportOrder.length > 0 ? inputs.reportOrder : DEFAULT_REPORT_ORDER;
@@ -247272,9 +247272,12 @@ function generateViews(inputs, report) {
     }
   }
   addReportFooters(report, inputs, hasPreviousResultsReports);
-  addFooter();
+  addFooter(inputs.reportSuffix);
 }
-function addFooter() {
+function addFooter(reportSuffix) {
+  if (reportSuffix?.trim()) {
+    summary.addRaw(reportSuffix).addEOL().addEOL();
+  }
   summary.addRaw(
     "[Github Test Reporter](https://github.com/ctrf-io/github-test-reporter) by [CTRF](https://ctrf.io) \u{1F49A}"
   );
@@ -247621,6 +247624,7 @@ function getInputs() {
     artifactName: getInput("artifact-name") || "ctrf-report",
     annotate: getBooleanInputAllowEmpty("annotate"),
     title: getInput("title") || "",
+    reportSuffix: getInput("report-suffix", { trimWhitespace: false }),
     onFailOnly: getBooleanInputAllowEmpty("on-fail-only"),
     exitOnNoFiles: getBooleanInputAllowEmpty("exit-on-no-files"),
     exitOnFail: getBooleanInputAllowEmpty("exit-on-fail"),

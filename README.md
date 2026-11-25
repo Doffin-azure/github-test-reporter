@@ -152,6 +152,7 @@ For more advanced usage, there are several inputs available.
     # Core Configuration
     report-path: "./ctrf/*.json" # Path or glob pattern to the CTRF report JSON file.
     template-path: "./templates/custom-summary.hbs" # Path to the Handlebars template for customizing markdown output.
+    report-suffix: "" # Markdown to append after the report content.
 
     # Reports - Choose as many as you like. Default is false. Choosing none will use default reports.
     summary-report: true
@@ -293,6 +294,20 @@ that repository:
   env:
     GITHUB_TOKEN: ${{ secrets.CROSS_REPO_TOKEN }}
   if: always()
+```
+
+### Link to an external report
+
+Use `report-suffix` to append Markdown to the job summary, PR or issue
+comment, and `summary` step output. For example, add a link produced by an
+earlier step:
+
+```yaml
+with:
+  report-path: "./ctrf/*.json"
+  summary-report: true
+  report-suffix: |
+    [View the Playwright HTML report](${{ steps.playwright-report.outputs.url }})
 ```
 
 ### Comment Management Inputs

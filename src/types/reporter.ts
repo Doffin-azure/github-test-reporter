@@ -37,6 +37,7 @@ export interface Inputs {
 	artifactName: string;
 	annotate: boolean;
 	title: string;
+	reportSuffix?: string;
 	onFailOnly: boolean;
 	exitOnNoFiles: boolean;
 	exitOnEmpty: boolean;

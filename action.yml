@@ -17,6 +17,9 @@ inputs:
   title:
     description: "Title to display in the GitHub Actions summary or pull request comment."
     required: false
+  report-suffix:
+    description: "Markdown to append after the report content."
+    required: false
 
   # Report Options
   summary-report:

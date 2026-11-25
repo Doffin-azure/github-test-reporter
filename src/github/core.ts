@@ -64,7 +64,7 @@ export function generateViews(inputs: Inputs, report: CTRFReport): void {
 		addViewToSummary("### Tests", BuiltInReports.TestTable, report);
 
 		addReportFooters(report, inputs, false);
-		addFooter();
+		addFooter(inputs.reportSuffix);
 		return;
 	}
 
@@ -130,13 +130,16 @@ export function generateViews(inputs: Inputs, report: CTRFReport): void {
 		}
 	}
 	addReportFooters(report, inputs, hasPreviousResultsReports);
-	addFooter();
+	addFooter(inputs.reportSuffix);
 }
 
 /**
  * Helper function to add the footer to the summary
  */
-function addFooter(): void {
+function addFooter(reportSuffix?: string): void {
+	if (reportSuffix?.trim()) {
+		core.summary.addRaw(reportSuffix).addEOL().addEOL();
+	}
 	core.summary.addRaw(
 		"[Github Test Reporter](https://github.com/ctrf-io/github-test-reporter) by [CTRF](https://ctrf.io) 💚",
 	);
