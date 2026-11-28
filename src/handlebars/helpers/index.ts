@@ -27,7 +27,6 @@ import {
 } from "./ctrf.js";
 import {
 	ansiToHtmlHelper,
-	formatAssertionDiffHelper,
 	formatMessageHelper,
 	formatMessagePreCodeHelper,
 	stripAnsiHelper,
@@ -47,7 +46,6 @@ export function registerAllHelpers(): void {
 	formatDurationMsToHumanHelper();
 	formatMessageHelper();
 	formatMessagePreCodeHelper();
-	formatAssertionDiffHelper();
 	LimitFailedTests();
 	moreThanHelper();
 	sortTestsByFlakyRateHelper();

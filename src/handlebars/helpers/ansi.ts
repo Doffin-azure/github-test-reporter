@@ -81,22 +81,3 @@ export function formatMessagePreCodeHelper(): void {
 		return convert.toHtml(message).replace(/\n{2,}/g, "\n");
 	});
 }
-
-export function formatAssertionDiffHelper(): void {
-	Handlebars.registerHelper("formatAssertionDiff", (text?: string) => {
-		if (typeof text !== "string") return undefined;
-
-		const message = stripAnsi(text).replace(/\r\n?/g, "\n");
-		if (!/^\+[ \t]/m.test(message) || !/^-[ \t]/m.test(message)) {
-			return undefined;
-		}
-
-		// Keep backticks from the assertion inside the fenced code block.
-		let fenceLength = 3;
-		for (const backticks of message.matchAll(/`{3,}/g)) {
-			fenceLength = Math.max(fenceLength, backticks[0].length + 1);
-		}
-		const fence = "`".repeat(fenceLength);
-		return `${fence}diff\n${message}\n${fence}`;
-	});
-}
