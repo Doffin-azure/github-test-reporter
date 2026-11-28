@@ -77,3 +77,28 @@ it("highlights the xUnit values when there are diagnostic lines between them", (
 	expect(output).toContain('data-assertion-role="actual"><span>Actual:   ');
 	expect(output).toContain("↓ (pos 0)");
 });
+
+it.each([
+	"assert 111 == 222",
+	"assert False",
+	"AssertionError: assert 'x' in ['y']",
+	"assert None is not None",
+	"assert 0",
+	"assert not True",
+])("highlights %j as a pytest expression", (message) => {
+	const output = renderFailure(message);
+	expect(output).toMatch(/<span style="color:[^"]+">assert<\/span>/);
+	expect(output).not.toContain('data-assertion-role="expected"');
+	expect(output).not.toContain('data-assertion-role="actual"');
+});
+
+it("colors pytest intraline hints and preserves the report text", () => {
+	const message =
+		"AssertionError: assert actual == expected\n  Full diff: (-: missing in left side, +: extra in left side)\n    {\n  -     expected\n  ?     ^\n  +     actual\n    }";
+	const output = renderFailure(message);
+	expect(output).toMatch(/<span style="color:[^"]+">- +expected<\/span>/);
+	expect(output).toMatch(/<span style="color:[^"]+">\+ +actual<\/span>/);
+	expect(output).toMatch(/<span style="color:[^"]+">\? +\^<\/span>/);
+	const code = output.match(/<code>([\s\S]*?)<\/code>/)?.[1];
+	expect(code?.replace(/<[^>]+>/g, "")).toBe(message);
+});
