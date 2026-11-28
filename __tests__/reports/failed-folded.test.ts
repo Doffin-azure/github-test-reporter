@@ -45,3 +45,35 @@ it("colors the two sides of a real Node assertion and keeps its trace", () => {
 	expect(added?.[1]).not.toBe(removed?.[1]);
 	expect(output).toContain("<pre><code>at example (test.ts:3:1)</code></pre>");
 });
+
+it("recognizes Jest diff headers and escapes literal HTML in the input", () => {
+	const output = renderFailure(
+		"- Expected\n+ Received\n\n- <em>old</em>\n+ <b>new</b>",
+	);
+	expect(output).toContain('<pre class="shiki github-light"');
+	expect(output).not.toMatch(/<em>|<b>/);
+	expect(output).toMatch(/(?:&lt;|&#x3C;)b/);
+});
+
+it("highlights JUnit values inline and leaves the message and brackets intact", () => {
+	const output = renderFailure(
+		"unexpected response ==> expected: <new <value>> but was: <old <value>>",
+	);
+	expect(output).toMatch(
+		/data-assertion-role="expected">expected: (?:&lt;|&#x3C;)new /,
+	);
+	expect(output).toMatch(
+		/data-assertion-role="actual">but was: (?:&lt;|&#x3C;)old /,
+	);
+	expect(output).toContain("unexpected response");
+	expect(output).not.toContain("<value>");
+});
+
+it("highlights the xUnit values when there are diagnostic lines between them", () => {
+	const output = renderFailure(
+		'Assert.Equal() Failure: Strings differ\nExpected: "old value"\n                ↓ (pos 0)\nActual:   "new value"',
+	);
+	expect(output).toContain('data-assertion-role="expected"><span>Expected: ');
+	expect(output).toContain('data-assertion-role="actual"><span>Actual:   ');
+	expect(output).toContain("↓ (pos 0)");
+});
