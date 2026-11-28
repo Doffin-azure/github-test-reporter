@@ -12,7 +12,11 @@
         <td>
           <details>
             <summary>{{getCtrfEmoji "failed"}} {{name}}</summary>
+            {{#with (formatAssertionDiff message) as |diffHtml|}}
+            {{{diffHtml}}}
+            {{else}}
             <pre><code>{{#if message}}{{formatTestMessagePreCode message true}}{{else}}No message available{{/if}}</code></pre>
+            {{/with}}
             <p><strong>Trace:</strong></p>
             <pre><code>{{#if trace}}{{formatTestMessagePreCode trace true}}{{else}}No trace available{{/if}}</code></pre>
           </details>

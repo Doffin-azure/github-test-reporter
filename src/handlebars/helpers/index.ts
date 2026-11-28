@@ -1,3 +1,4 @@
+import Handlebars from "handlebars";
 import {
 	convertTimestamp,
 	escapeMarkdownHelper,
@@ -32,6 +33,7 @@ import {
 	stripAnsiHelper,
 } from "./ansi.js";
 import { reverseArray, sliceArrayHelper } from "./array.js";
+import { renderAssertionDiff } from "./assertion-diff.js";
 import { addHelper } from "./math.js";
 
 export function registerAllHelpers(): void {
@@ -46,6 +48,7 @@ export function registerAllHelpers(): void {
 	formatDurationMsToHumanHelper();
 	formatMessageHelper();
 	formatMessagePreCodeHelper();
+	Handlebars.registerHelper("formatAssertionDiff", renderAssertionDiff);
 	LimitFailedTests();
 	moreThanHelper();
 	sortTestsByFlakyRateHelper();
