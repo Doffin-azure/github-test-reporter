@@ -5,6 +5,7 @@ import {
 	isDiffChange,
 } from "./assertion-highlighter.js";
 import { findAssertionMarkers } from "./assertion-markers.js";
+import { renderPythonAssertion } from "./assertion-python.js";
 
 const nodeLegend =
 	/^\+ actual - expected(?:[ \t]+(?:\.\.\.|…) Lines skipped)?$/;
@@ -12,7 +13,7 @@ const expectedLegend = /^- Expected(?:[ \t]+-[ \t]+\d+)?$/;
 const receivedLegend = /^\+ Received(?:[ \t]+\+[ \t]+\d+)?$/;
 const markerColors = { expected: "#B31D28", actual: "#22863A" };
 
-function renderAssertionValues(text: string, lines: string[]): string | undefined {
+function renderAssertionValues(text: string, lines: string[]) {
 	const markers = findAssertionMarkers(lines);
 	if (markers.length === 0) return undefined;
 
@@ -41,7 +42,10 @@ export function renderAssertionDiff(message: unknown): string | undefined {
 			(expectedLegend.test(line) &&
 				receivedLegend.test(lines[index + 1] ?? "")),
 	);
-	if (legendIndex === -1) return renderAssertionValues(text, lines);
+	if (legendIndex === -1) {
+		const labeled = renderAssertionValues(text, lines);
+		return labeled ?? renderPythonAssertion(text, lines);
+	}
 
 	const highlighter = getAssertionHighlighter();
 	const legendLength = nodeLegend.test(lines[legendIndex]) ? 1 : 2;
