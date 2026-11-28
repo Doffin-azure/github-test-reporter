@@ -31,7 +31,15 @@ export function renderPythonAssertion(text: string, lines: string[]) {
 			? lines.slice(body)
 			: [];
 	const normalized = diffLines.map((line) => line.replace(/^ {2}/, ""));
-	const diffTokens = highlighter.codeToTokensBase(normalized.join("\n"), {
+	// Python's ndiff prefixes intraline hints with "?". TextMate uses "!" for changed lines.
+	const hints = normalized.map(
+		(line, index) =>
+			/^\? [ \t+^-]+$/.test(line) && /^[+-] /.test(normalized[index - 1] ?? ""),
+	);
+	const grammarInput = normalized.map((line, index) =>
+		hints[index] ? `!${line.slice(1)}` : line,
+	);
+	const diffTokens = highlighter.codeToTokensBase(grammarInput.join("\n"), {
 		lang: "diff",
 		theme,
 		includeExplanation: "scopeName",
@@ -54,12 +62,19 @@ export function renderPythonAssertion(text: string, lines: string[]) {
 					];
 					for (const [index, line] of diffLines.entries()) {
 						const colored = diffTokens[index];
-						if (!line.startsWith("  ") || !isDiffChange(colored)) continue;
+						const hint =
+							hints[index] && hasScope(colored[0], "markup.changed.diff");
+						if (!line.startsWith("  ") || (!hint && !isDiffChange(colored)))
+							continue;
 						const offset = tokens[body + index][0].offset;
 						tokens[body + index] = [
 							{ content: "  ", offset },
-							...colored.map((token) => ({
+							...colored.map((token, tokenIndex) => ({
 								...token,
+								content:
+									hint && tokenIndex === 0
+										? `?${token.content.slice(1)}`
+										: token.content,
 								offset: offset + 2 + token.offset - colored[0].offset,
 							})),
 						];
