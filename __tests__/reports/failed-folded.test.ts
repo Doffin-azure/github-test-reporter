@@ -39,7 +39,9 @@ it("colors the two sides of a real Node assertion and keeps its trace", () => {
 	});
 	const output = renderFailure(message, "at example (test.ts:3:1)");
 	const added = output.match(/<span style="color:([^"]+)">\+ +id: 111<\/span>/);
-	const removed = output.match(/<span style="color:([^"]+)">- +id: 222<\/span>/);
+	const removed = output.match(
+		/<span style="color:([^"]+)">- +id: 222<\/span>/,
+	);
 	expect(added).not.toBeNull();
 	expect(removed).not.toBeNull();
 	expect(added?.[1]).not.toBe(removed?.[1]);
@@ -101,4 +103,36 @@ it("colors pytest intraline hints and preserves the report text", () => {
 	expect(output).toMatch(/<span style="color:[^"]+">\? +\^<\/span>/);
 	const code = output.match(/<code>([\s\S]*?)<\/code>/)?.[1];
 	expect(code?.replace(/<[^>]+>/g, "")).toBe(message);
+});
+
+it.each(["+   id: 111,", "-   id: 222,"])(
+	"highlights a one-sided assertion diff with %s",
+	(line) => {
+		expect(renderFailure(`+ actual - expected\n\n${line}`)).toContain(
+			'<pre class="shiki github-light"',
+		);
+	},
+);
+
+it.each([
+	"Request timed out",
+	"Setup log\n+ starting the server\n- stopping the server",
+	"+ actual - expected\nNo difference recorded",
+	"Expected: config loaded\nActual: timeout",
+	"Assert.Equal() Failure: Values differ\nExpected: 222",
+])("leaves ordinary diagnostics alone in %j", (message) => {
+	const output = renderFailure(message);
+	expect(output).toContain("<pre><code>");
+	expect(output).not.toContain('class="shiki');
+});
+
+it("leaves a standalone pytest question mark uncolored", () => {
+	const output = renderFailure("assert False\n\n  ?     ^");
+	expect(output).not.toMatch(/<span style="color:[^"]+">\? /);
+});
+
+it("keeps the existing placeholders when error details are missing", () => {
+	const output = renderFailure();
+	expect(output).toContain("<pre><code>No message available</code></pre>");
+	expect(output).toContain("<pre><code>No trace available</code></pre>");
 });
