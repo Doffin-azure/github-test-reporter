@@ -4,11 +4,31 @@ import {
 	getAssertionHighlighter,
 	isDiffChange,
 } from "./assertion-highlighter.js";
+import { findAssertionMarkers } from "./assertion-markers.js";
 
 const nodeLegend =
 	/^\+ actual - expected(?:[ \t]+(?:\.\.\.|…) Lines skipped)?$/;
 const expectedLegend = /^- Expected(?:[ \t]+-[ \t]+\d+)?$/;
 const receivedLegend = /^\+ Received(?:[ \t]+\+[ \t]+\d+)?$/;
+const markerColors = { expected: "#B31D28", actual: "#22863A" };
+
+function renderAssertionValues(text: string, lines: string[]): string | undefined {
+	const markers = findAssertionMarkers(lines);
+	if (markers.length === 0) return undefined;
+
+	return getAssertionHighlighter().codeToHtml(text, {
+		lang: "text",
+		theme,
+		decorations: markers.map(({ line, start, end, role }) => ({
+			start: { line, character: start },
+			end: { line, character: end },
+			properties: {
+				style: `color:${markerColors[role]}`,
+				"data-assertion-role": role,
+			},
+		})),
+	});
+}
 
 export function renderAssertionDiff(message: unknown): string | undefined {
 	if (typeof message !== "string") return undefined;
@@ -21,7 +41,7 @@ export function renderAssertionDiff(message: unknown): string | undefined {
 			(expectedLegend.test(line) &&
 				receivedLegend.test(lines[index + 1] ?? "")),
 	);
-	if (legendIndex === -1) return undefined;
+	if (legendIndex === -1) return renderAssertionValues(text, lines);
 
 	const highlighter = getAssertionHighlighter();
 	const legendLength = nodeLegend.test(lines[legendIndex]) ? 1 : 2;
